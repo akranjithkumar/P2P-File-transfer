@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Transfer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .qr-container {
+            margin-top: 50px;
+        }
+        img {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scan the QR Code to Connect</h1>
+    <div class="qr-container">
+        <img src="{{ url_for('static', filename='qr_code.png') }}" alt="QR Code">
+    </div>
+    <p>Scan this QR code using the Flutter mobile app to connect to the file transfer server.</p>
+</body>
+</html>

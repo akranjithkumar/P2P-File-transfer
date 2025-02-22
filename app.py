@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Directory for storing and serving files
-UPLOAD_DIRECTORY = r"D:\fosshack\uploads"  # Change this to your desired directory
+UPLOAD_DIRECTORY = os.path.join(os.getcwd(), "uploads")  # Change this to your desired directory
 
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)

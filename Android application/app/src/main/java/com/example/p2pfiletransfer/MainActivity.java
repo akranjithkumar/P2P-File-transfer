@@ -14,10 +14,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout btn_recieve,btn_message;
     list_adapter adapter;
     ArrayList arr_file_name;
+    String url;
+    Data data;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,19 +73,22 @@ public class MainActivity extends AppCompatActivity {
         img_hotspot = findViewById(R.id.img_hotspot);
         recycle_completed = findViewById(R.id.message_recyclerview_completed);
 
-
+        data = new Data(getApplicationContext());
         array_name = new ArrayList();
         arr_size = new ArrayList();
         arr_status = new ArrayList();
         arr_file_name = new ArrayList();
 
 
+        if(data.getAll().isEmpty()){
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Volume up");
+            options.setBarcodeImageEnabled(true);
+            options.setOrientationLocked(true);
+            options.setCaptureActivity(Capture.class);
+            barLauncer.launch(options);
 
-        String strurl = "http://192.168.143.237:5000/upload";
-
-
-
-        Toast.makeText(this, arr_file_name.toString(), Toast.LENGTH_SHORT).show();
+        }
 
 
 
@@ -88,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),Message.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.putExtra("url",url);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -97,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),Recieve.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
+                intent.putExtra("url",url);
                 startActivity(intent);
                 finish();
             }
@@ -107,9 +119,7 @@ public class MainActivity extends AppCompatActivity {
         img_hotspot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),Connect_hotspot.class);
-                startActivity(intent);
-                finish();
+
             }
         });
 
@@ -163,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     private void displayFileInfo(Uri uri) throws FileNotFoundException {
 
 
-        getFileFromUri(getApplicationContext(),uri);
+        getFileFromUri(getApplicationContext(),uri,data.getString("url"));
 
 
 
@@ -171,9 +181,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static void getFileFromUri(Context context, Uri uri) {
+    private static void getFileFromUri(Context context, Uri uri,String data) {
         try {
-
             String result = "temp_file";
             try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
@@ -209,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://172.16.14.3:5000/upload")
+                    .url(data+"/upload")
                     .post(requestBody)
                     .build();
 
@@ -233,5 +242,17 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 }
+
+
+    ActivityResultLauncher<ScanOptions> barLauncer = registerForActivityResult(new ScanContract(), result -> {
+        if(result.getContents() != null) {
+            url = result.getContents().toString();
+            data.putString("url",url);
+
+            //Toast.makeText(this, result.getContents().toString(), Toast.LENGTH_SHORT).show();
+        }
+
+
+    });
 
 }

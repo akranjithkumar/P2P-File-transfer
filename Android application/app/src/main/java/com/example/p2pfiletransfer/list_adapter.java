@@ -32,14 +32,18 @@ import java.util.Map;
 public class list_adapter extends RecyclerView.Adapter<list_holder> {
 
     Context context;
+    String url;
     ArrayList array_name,arr_size,arr_status;
     ArrayList arr_completed;
+    Data data;
 
-    public list_adapter(Context context, ArrayList array_name, ArrayList arr_size, ArrayList arr_status) {
+    public list_adapter(Context context, ArrayList array_name, ArrayList arr_size, ArrayList arr_status, String url) {
         this.context = context;
         this.array_name = array_name;
         this.arr_size = arr_size;
         this.arr_status = arr_status;
+        this.url = url;
+        data = new Data(context);
     }
 
     @NonNull
@@ -59,7 +63,7 @@ public class list_adapter extends RecyclerView.Adapter<list_holder> {
             @Override
             public void onClick(View v) {
                 String fileName = array_name.get(position).toString();
-                String fileUrl = "http://172.16.14.3:5000/download/"+ fileName;
+                String fileUrl = data.getString("url")+"/download/"+ fileName;
 
                 DownloadManager.Request request1 = new DownloadManager.Request(Uri.parse(fileUrl));
                 request1.setTitle("Downloading "+ fileName);
@@ -97,13 +101,13 @@ public class list_adapter extends RecyclerView.Adapter<list_holder> {
                 String fileName = array_name.get(position).toString();
                 Toast.makeText(context, fileName, Toast.LENGTH_SHORT).show();
 
-                String url = "http://172.16.14.3:5000/delete/" + fileName; // Change this URL to match your API
+                String del_url = data.getString("url")+ "/delete/" + fileName; // Change this URL to match your API
 
                 // Creating a request queue
                 RequestQueue queue = Volley.newRequestQueue(context);
 
                 // Creating a DELETE request
-                StringRequest del_request = new StringRequest(Request.Method.DELETE, url,
+                StringRequest del_request = new StringRequest(Request.Method.DELETE, del_url,
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {

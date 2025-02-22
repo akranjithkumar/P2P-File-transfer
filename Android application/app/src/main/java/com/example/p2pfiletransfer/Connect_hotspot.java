@@ -67,19 +67,7 @@ public class Connect_hotspot extends AppCompatActivity {
 
     ActivityResultLauncher<ScanOptions> barLauncer = registerForActivityResult(new ScanContract(),result -> {
         if(result.getContents() != null) {
-
-
-
-            WifiConfiguration wifiConfig = new WifiConfiguration();
-            wifiConfig.SSID = String.format("\"%s\"" , "AKRS123");
-            wifiConfig.preSharedKey = String.format("\"%s\"" , "12345678");
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-
-            int netId = wifiManager.addNetwork(wifiConfig);
-            wifiManager.disconnect();
-            wifiManager.enableNetwork(netId , true);
-            wifiManager.reconnect();
+            Toast.makeText(this, result.getContents().toString(), Toast.LENGTH_SHORT).show();
         }
 
 

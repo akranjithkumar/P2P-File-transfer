@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,6 +21,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +35,8 @@ public class Recieve extends AppCompatActivity {
     ArrayList array_name,arr_size,arr_status,arr_file_name;
     RecyclerView recyclerView;
     ImageView img_hotspot;
+    Data data;
+    String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +55,21 @@ public class Recieve extends AppCompatActivity {
         arr_status = new ArrayList();
         arr_file_name = new ArrayList();
 
+        data = new Data(getApplicationContext());
+
+        //url = getIntent().getStringExtra("url");
+
+        if(data.getString("url").equals(null)){
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Volume up");
+            options.setBarcodeImageEnabled(true);
+            options.setOrientationLocked(true);
+            options.setCaptureActivity(Capture.class);
+            barLauncer.launch(options);
+        }
 
 
-        String strurl = "http://172.16.14.3:5000/files";
-
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, strurl, null,
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, data.getString("url")+"/files", null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -68,7 +83,7 @@ public class Recieve extends AppCompatActivity {
                                 arr_status.add("not");
                                 Toast.makeText(Recieve.this, "kjg", Toast.LENGTH_SHORT).show();
                                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                recyclerView.setAdapter(new list_adapter(getApplicationContext(),array_name,arr_size,arr_status));
+                                recyclerView.setAdapter(new list_adapter(getApplicationContext(),array_name,arr_size,arr_status,url));
 
                             }
                         } catch (JSONException e) {
@@ -105,7 +120,9 @@ public class Recieve extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                intent.putExtra("url",url);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -113,10 +130,21 @@ public class Recieve extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),Message.class);
+                intent.putExtra("url",url);
                 startActivity(intent);
                 finish();
             }
         });
 
     }
+
+    ActivityResultLauncher<ScanOptions> barLauncer = registerForActivityResult(new ScanContract(), result -> {
+        if(result.getContents() != null) {
+            url = result.getContents().toString();
+            data.putString("url",url);
+            //Toast.makeText(this, result.getContents().toString(), Toast.LENGTH_SHORT).show();
+        }
+
+
+    });
 }

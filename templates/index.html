@@ -197,6 +197,8 @@
         <h2>📂 File Manager</h2>
         <button class="btn btn-primary" onclick="generateQR()">Generate QR</button>
     </div>
+
+    
     
     <div class="card">
         <div class="upload-section">
@@ -256,7 +258,7 @@
                 }
             });
 
-            // Add new files or update existing ones
+
             newFiles.forEach(file => {
                 const existingItem = document.getElementById(`file-${file}`);
                 if (!existingItem) {

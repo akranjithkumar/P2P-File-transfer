@@ -12,6 +12,21 @@ UPLOAD_DIRECTORY = r"D:\fosshack\uploads"  # Change this to your desired directo
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
+#socket update
+import socket
+
+# Function to get the local IP address
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))  # Connect to an external server
+        ip = s.getsockname()[0]  # Get the assigned IP address
+    except Exception:
+        ip = "127.0.0.1"  # Fallback to localhost
+    finally:
+        s.close()
+    return ip
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -55,8 +70,8 @@ def delete_file(filename):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Predefined text for QR Code
-QR_TEXT = "192.168.0.1:5000"
+# Dynamic QR code based on IP address
+QR_TEXT = f"{get_local_ip()}:5000"
 
 # QR Code Directory
 STATIC_DIR = "static"

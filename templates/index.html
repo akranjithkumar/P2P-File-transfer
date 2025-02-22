@@ -3,27 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Transfer</title>
+    <title>File Manager</title>
     <style>
+        /* Previous styles remain the same until list-group-item */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .text-center {
             text-align: center;
-            padding: 20px;
         }
-        .qr-container {
-            margin-top: 50px;
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
         }
-        img {
-            width: 300px;
-            height: 300px;
+
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .file-input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .list-group {
+            list-style: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 50px; /* Prevent collapse when empty */
+        }
+
+        .list-group-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .list-group-item.fade-out {
+            opacity: 0;
+        }
+
+        .list-group-item.fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        h4 {
+            margin-bottom: 1rem;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .refresh-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .refresh-indicator.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <h1>Scan the QR Code to Connect</h1>
-    <div class="qr-container">
-        <img src="{{ url_for('static', filename='qr_code.png') }}" alt="QR Code">
+    <h2 class="text-center">📂 File Manager</h2>
+    
+    <div class="card">
+        <div class="upload-section">
+            <input type="file" id="fileInput" class="file-input">
+            <button class="btn btn-success" onclick="uploadFile()">Upload File</button>
+        </div>
     </div>
-    <p>Scan this QR code using the Flutter mobile app to connect to the file transfer server.</p>
+
+    <h4>Available Files</h4>
+    <ul id="filesList" class="list-group"></ul>
+
+    <div id="refreshIndicator" class="refresh-indicator">Refreshing...</div>
+
+    <script>
+        let refreshInterval;
+        const REFRESH_INTERVAL = 5000; // 5 seconds
+        let currentFiles = new Set();
+
+        async function fetchFiles() {
+            try {
+                const response = await fetch("/files");
+                const data = await response.json();
+                
+                if (data.error) {
+                    const filesList = document.getElementById("filesList");
+                    filesList.innerHTML = `<li class="text-danger">${data.error}</li>`;
+                    return;
+                }
+
+                updateFilesList(data);
+            } catch (error) {
+                console.error('Error fetching files:', error);
+            }
+        }
+
+        function updateFilesList(newFiles) {
+            const filesList = document.getElementById("filesList");
+            const newFilesSet = new Set(newFiles);
+            
+            // Remove files that no longer exist
+            currentFiles.forEach(file => {
+                if (!newFilesSet.has(file)) {
+                    const element = document.getElementById(`file-${file}`);
+                    if (element) {
+                        element.classList.add('fade-out');
+                        setTimeout(() => element.remove(), 300);
+                    }
+                }
+            });
+
+            // Add new files or update existing ones
+            newFiles.forEach(file => {
+                const existingItem = document.getElementById(`file-${file}`);
+                if (!existingItem) {
+                    // Add new file
+                    const listItem = document.createElement("li");
+                    listItem.id = `file-${file}`;
+                    listItem.classList.add("list-group-item", "fade-in");
+                    
+                    listItem.innerHTML = `
+                        <span>📄 ${file}</span>
+                        <div class="file-actions">
+                            <a href="/download/${file}" class="btn btn-primary btn-sm" onclick="handleDownload(event, '${file}')">Download</a>
+                            <button class="btn btn-danger btn-sm" onclick="deleteFile('${file}')">Delete</button>
+                        </div>
+                    `;
+                    
+                    filesList.appendChild(listItem);
+                }
+            });
+
+            currentFiles = newFilesSet;
+        }
+
+        function handleDownload(event, filename) {
+            setTimeout(fetchFiles, 1000);
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please select a file to upload.");
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const result = await response.json();
+                alert(result.message || result.error);
+                fileInput.value = '';
+                fetchFiles();
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('Error uploading file. Please try again.');
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;
+            
+            try {
+                const response = await fetch(`/delete/${filename}`, { method: "DELETE" });
+                const result = await response.json();
+                alert(result.message || result.error);
+                fetchFiles();
+            } catch (error) {
+                console.error('Error deleting file:', error);
+                alert('Error deleting file. Please try again.');
+            }
+        }
+
+        function startAutoRefresh() {
+            fetchFiles();
+            
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            refreshInterval = setInterval(fetchFiles, REFRESH_INTERVAL);
+        }
+
+        window.onfocus = () => {
+            fetchFiles();
+        };
+
+        window.onload = startAutoRefresh;
+    </script>
 </body>
 </html>

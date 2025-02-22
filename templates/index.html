@@ -202,7 +202,7 @@
     
     <div class="card">
         <div class="upload-section">
-            <input type="file" id="fileInput" class="file-input">
+            <input type="file" id="fileInput" class="file-input" multiple>
             <button class="btn btn-success" onclick="uploadFile()">Upload File</button>
         </div>
     </div>
@@ -286,31 +286,34 @@
             setTimeout(fetchFiles, 1000);
         }
 
-        async function uploadFile() {
-            const fileInput = document.getElementById("fileInput");
-            if (!fileInput.files.length) {
-                alert("Please select a file to upload.");
-                return;
-            }
-            
-            try {
-                const formData = new FormData();
-                formData.append("file", fileInput.files[0]);
-                
-                const response = await fetch("/upload", {
-                    method: "POST",
-                    body: formData
-                });
-                
-                const result = await response.json();
-                alert(result.message || result.error);
-                fileInput.value = '';
-                fetchFiles();
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                alert('Error uploading file. Please try again.');
-            }
+    async function uploadFile() {
+    const fileInput = document.getElementById("fileInput");
+    if (!fileInput.files.length) {
+        alert("Please select files to upload.");
+        return;
+    }
+
+    for (const file of fileInput.files) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            console.log(`Uploaded: ${file.name}`, result);
+        } catch (error) {
+            console.error(`Error uploading ${file.name}:`, error);
         }
+    }
+
+    alert("All files uploaded successfully.");
+    fileInput.value = '';
+    fetchFiles();
+}
 
         async function deleteFile(filename) {
             if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;

@@ -2,6 +2,7 @@ from flask import Flask, request, send_from_directory, jsonify, render_template
 from flask_cors import CORS
 import os
 import qrcode
+import hashlib
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -26,6 +27,12 @@ def get_local_ip():
     finally:
         s.close()
     return ip
+
+# Hash function
+def hash_ip(ip):
+    return hashlib.sha256(ip.encode()).hexdigest()
+
+hashed_ip = hash_ip(f"{get_local_ip()}:5000")
 
 @app.route("/")
 def home():
@@ -77,6 +84,7 @@ QR_TEXT = f"{get_local_ip()}:5000"
 STATIC_DIR = "static"
 QR_CODE_PATH = os.path.join(STATIC_DIR, "qrcode.png")
 
+hashed_ip = hash_ip(f"{get_local_ip()}:5000")
 # Ensure static directory exists
 os.makedirs(STATIC_DIR, exist_ok=True)
 
@@ -91,7 +99,7 @@ for filename in os.listdir(STATIC_DIR):
 
 # Generate and save the QR code
 def generate_qr():
-    qr = qrcode.make(QR_TEXT)
+    qr = qrcode.make(hashed_ip)
     qr.save(QR_CODE_PATH)
 
 generate_qr()  # Ensure QR is created at startup
@@ -100,6 +108,13 @@ generate_qr()  # Ensure QR is created at startup
 def get_qr():
     generate_qr()
     return send_from_directory(STATIC_DIR, "qrcode.png")
+
+@app.route("/decode", methods=["POST"])
+def decode_qr():
+    data = request.json.get("hash")
+    if data == hashed_ip:
+        return jsonify({"ip": get_local_ip(), "port": 5000})
+    return jsonify({"error": "Invalid QR code"}), 400
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)  # Accessible in the same network

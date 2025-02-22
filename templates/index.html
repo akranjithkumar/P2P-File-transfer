@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Manager</title>
     <style>
-        /* Previous styles remain the same until list-group-item */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -17,6 +16,13 @@
             max-width: 800px;
             margin: 2rem auto;
             padding: 0 1rem;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
 
         .text-center {
@@ -75,7 +81,7 @@
             list-style: none;
             border: 1px solid #ddd;
             border-radius: 4px;
-            min-height: 50px; /* Prevent collapse when empty */
+            min-height: 50px;
         }
 
         .list-group-item {
@@ -111,7 +117,7 @@
         }
 
         h2 {
-            margin-bottom: 1.5rem;
+            margin: 0;
         }
 
         h4 {
@@ -142,10 +148,55 @@
         .refresh-indicator.show {
             opacity: 1;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        .qr-image {
+            max-width: 200px;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        .close {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #000;
+        }
     </style>
 </head>
 <body>
-    <h2 class="text-center">📂 File Manager</h2>
+    <div class="header-container">
+        <h2>📂 File Manager</h2>
+        <button class="btn btn-primary" onclick="generateQR()">Generate QR</button>
+    </div>
     
     <div class="card">
         <div class="upload-section">
@@ -158,6 +209,15 @@
     <ul id="filesList" class="list-group"></ul>
 
     <div id="refreshIndicator" class="refresh-indicator">Refreshing...</div>
+
+    <!-- QR Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeQRModal()">&times;</span>
+            <h3>QR Code</h3>
+            <img id="qrImage" src="" alt="QR Code" class="qr-image">
+        </div>
+    </div>
 
     <script>
         let refreshInterval;
@@ -261,6 +321,23 @@
             } catch (error) {
                 console.error('Error deleting file:', error);
                 alert('Error deleting file. Please try again.');
+            }
+        }
+
+        function generateQR() {
+            document.getElementById("qrImage").src = `/static/qrcode.png`;
+            document.getElementById("qrModal").style.display = "block";
+        }
+
+        function closeQRModal() {
+            document.getElementById("qrModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById("qrModal");
+            if (event.target === modal) {
+                closeQRModal();
             }
         }
 

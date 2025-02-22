@@ -78,7 +78,8 @@ def delete_file(filename):
         return jsonify({"error": str(e)}), 500
 
 # Dynamic QR code based on IP address
-QR_TEXT = f"{get_local_ip()}:5000"
+QR_TEXT = "http://"+ f"{get_local_ip()}:5000"
+# print(QR_TEXT)
 
 # QR Code Directory
 STATIC_DIR = "static"
@@ -99,7 +100,7 @@ for filename in os.listdir(STATIC_DIR):
 
 # Generate and save the QR code
 def generate_qr():
-    qr = qrcode.make(hashed_ip)
+    qr = qrcode.make(QR_TEXT)
     qr.save(QR_CODE_PATH)
 
 generate_qr()  # Ensure QR is created at startup

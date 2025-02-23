@@ -1,7 +1,7 @@
 # Cross Platform Peer-to-Peer File Transfer System (P2P Transfer)  
 
 ## Overview  
-P2P Transfer is a **cross-platform** peer-to-peer file transfer system that allows users to **share files seamlessly across devices**. It uses **QR code-based authentication** and **network discovery** to enable secure file sharing over the same **WiFi network**.  
+P2P Transfer is a **cross-platform** peer-to-peer file transfer system that allows users to **share files seamlessly across devices**. It uses **QR code-based authentication** and **network discovery** to enable secure file sharing over the same **WiFi network**. This project focuses on developing a cross-platform file transfer application that allows users to share files such as documents, photos,videos and any file formats seamlessly across mobile devices, desktops, and web platforms (Across OS - Windows, Linux, MacOS, Android) . Built using Android Native, the application ensures a consistent and responsive user experience across all platforms. Features like QR code scanning for device pairing and authetication,  and collaborative tools will enhance usability, making file sharing and teamwork more efficient.
 
 ## Demo
 https://github.com/user-attachments/assets/f79e7968-c9f4-41c8-b2ac-738deddc8ebe

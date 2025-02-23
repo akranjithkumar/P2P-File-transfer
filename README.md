@@ -3,6 +3,8 @@
 ## Overview  
 P2P Transfer is a **cross-platform** peer-to-peer file transfer system that allows users to **share files seamlessly across devices**. It uses **QR code-based authentication** and **network discovery** to enable secure file sharing over the same **WiFi network**.  
 
+## Demo
+![Video](https://github.com/akranjithkumar/P2P-File-transfer/blob/main/output.mp4)
 ## Features  
 - **Cross-Platform Support:**  
   - 🖥️ Windows (.exe)  

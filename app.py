@@ -3,19 +3,25 @@ from flask_cors import CORS
 import os
 import qrcode
 import hashlib
+import socket
+import sys
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Directory for storing and serving files
-UPLOAD_DIRECTORY = os.path.join(os.getcwd(), "uploads")  
-# Change this to your desired directory
+# Determine the base directory for the application
+if getattr(sys, 'frozen', False):
+    BASE_DIR = sys._MEIPASS  # Temporary folder created by PyInstaller
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Ensure the upload directory exists
+# Directories for storing and serving files
+UPLOAD_DIRECTORY = os.path.join(BASE_DIR, "uploads")
+STATIC_DIRECTORY = os.path.join(BASE_DIR, "static")
+
+# Ensure the upload and static directories exist
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-
-#socket update
-import socket
+os.makedirs(STATIC_DIRECTORY, exist_ok=True)
 
 # Function to get the local IP address
 def get_local_ip():
@@ -80,22 +86,14 @@ def delete_file(filename):
 
 # Dynamic QR code based on IP address
 QR_TEXT = "http://"+ f"{get_local_ip()}:5000"
-# print(QR_TEXT)
-
-# QR Code Directory
-STATIC_DIR = "static"
-QR_CODE_PATH = os.path.join(STATIC_DIR, "qrcode.png")
-
-hashed_ip = hash_ip(f"{get_local_ip()}:5000")
-# Ensure static directory exists
-os.makedirs(STATIC_DIR, exist_ok=True)
+QR_CODE_PATH = os.path.join(STATIC_DIRECTORY, "qrcode.png")
 
 # Delete all files in static directory at startup
-for filename in os.listdir(STATIC_DIR):
-    file_path = os.path.join(STATIC_DIR, filename)
+for filename in os.listdir(STATIC_DIRECTORY):
+    file_path = os.path.join(STATIC_DIRECTORY, filename)
     try:
         if os.path.isfile(file_path):
-            os.unlink(file_path)
+            os.remove(file_path)  # Use os.remove for clarity
     except Exception as e:
         print(f"Error deleting {file_path}: {e}")
 
@@ -109,7 +107,7 @@ generate_qr()  # Ensure QR is created at startup
 @app.route("/qrcode")
 def get_qr():
     generate_qr()
-    return send_from_directory(STATIC_DIR, "qrcode.png")
+    return send_from_directory(STATIC_DIRECTORY, "qrcode.png")
 
 @app.route("/decode", methods=["POST"])
 def decode_qr():

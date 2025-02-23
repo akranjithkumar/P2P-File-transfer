@@ -4,7 +4,12 @@
 P2P Transfer is a **cross-platform** peer-to-peer file transfer system that allows users to **share files seamlessly across devices**. It uses **QR code-based authentication** and **network discovery** to enable secure file sharing over the same **WiFi network**. This project focuses on developing a cross-platform file transfer application that allows users to share files such as documents, photos,videos and any file formats seamlessly across mobile devices, desktops, and web platforms (Across OS - Windows, Linux, MacOS, Android) . Built using Android Native, the application ensures a consistent and responsive user experience across all platforms. Features like QR code scanning for device pairing and authetication,  and collaborative tools will enhance usability, making file sharing and teamwork more efficient.
 
 ## Demo
-https://github.com/user-attachments/assets/f79e7968-c9f4-41c8-b2ac-738deddc8ebe
+**1. Basic Installation and working:**
+https://github.com/user-attachments/assets/7c939bc6-896e-4d76-833b-6d9702a7d2d7
+
+**2. Multiple Scnearios and OS (Windows/Linux/Android) Output**
+https://github.com/user-attachments/assets/25cbeaae-db6b-4d17-89e1-054a144945f4
+
 ## Features  
 - **Cross-Platform Support:**  
   - 🖥️ Windows (.exe)  
@@ -54,7 +59,8 @@ https://github.com/user-attachments/assets/f79e7968-c9f4-41c8-b2ac-738deddc8ebe
    ```
 2. **Install dependencies :**
    ```sh
-   pip install -r requirements.txt ```
+   pip install -r requirements.txt
+   ```
 
 3. **Run the Flask server:**
    ```sh

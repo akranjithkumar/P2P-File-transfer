@@ -5,10 +5,14 @@ P2P Transfer is a **cross-platform** peer-to-peer file transfer system that allo
 
 ## Demo
 **1. Basic Installation and working:**
-https://github.com/user-attachments/assets/7c939bc6-896e-4d76-833b-6d9702a7d2d7
+  
+  
+  https://github.com/user-attachments/assets/7c939bc6-896e-4d76-833b-6d9702a7d2d7
 
 **2. Multiple Scnearios and OS (Windows/Linux/Android) Output**
-https://github.com/user-attachments/assets/25cbeaae-db6b-4d17-89e1-054a144945f4
+  
+  
+  https://github.com/user-attachments/assets/25cbeaae-db6b-4d17-89e1-054a144945f4
 
 ## Features  
 - **Cross-Platform Support:**  

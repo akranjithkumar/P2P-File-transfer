@@ -3,6 +3,7 @@ package com.example.p2pfiletransfer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ public class Message extends AppCompatActivity {
     RecyclerView recyclerView;
     String url;
     Data data;
+    ImageView img_m;
     ArrayList arr_send,arr_recieve;
 
     @Override
@@ -39,21 +41,33 @@ public class Message extends AppCompatActivity {
         recyclerView = findViewById(R.id.message_recyclerview);
 
         data = new Data(getApplicationContext());
-
+        img_m = findViewById(R.id.img_message_menu);
         arr_send = new ArrayList();
         arr_recieve = new ArrayList();
 
         url = getIntent().getStringExtra("url");
 
-        if(data.getString("url")==null){
+        if(data.getAll().isEmpty()){
             ScanOptions options = new ScanOptions();
             options.setPrompt("Volume up");
             options.setBarcodeImageEnabled(true);
             options.setOrientationLocked(true);
             options.setCaptureActivity(Capture.class);
             barLauncer.launch(options);
-
         }
+
+        img_m.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                data.clear();
+                ScanOptions options = new ScanOptions();
+                options.setPrompt("Volume up");
+                options.setBarcodeImageEnabled(true);
+                options.setOrientationLocked(true);
+                options.setCaptureActivity(Capture.class);
+                barLauncer.launch(options);
+            }
+        });
 
 
         arr_send.add("");

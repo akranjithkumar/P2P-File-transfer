@@ -1,5 +1,6 @@
 package com.example.p2pfiletransfer;
 
+import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,6 +20,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.journeyapps.barcodescanner.ScanContract;
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView,recycle_completed;
     ArrayList array_name,arr_size,arr_status;
     TextView txt_check;
-    ImageView img_hotspot;
+    ImageView img_hotspot,img_ill,img_menu;
     LinearLayout btn_recieve,btn_message;
     list_adapter adapter;
     ArrayList arr_file_name;
@@ -64,14 +68,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         txt_check = findViewById(R.id.txt_head);
-
+        img_ill = findViewById(R.id.img_illustration);
         btn_recieve = findViewById(R.id.main_recieve_btn);
-        btn_message = findViewById(R.id.main_message_btn);
-
+        img_menu = findViewById(R.id.img_main_menu);
         btn_choose = findViewById(R.id.btn_buy);
         recyclerView = findViewById(R.id.message_recyclerview);
         img_hotspot = findViewById(R.id.img_hotspot);
-        recycle_completed = findViewById(R.id.message_recyclerview_completed);
 
         data = new Data(getApplicationContext());
         array_name = new ArrayList();
@@ -79,6 +81,18 @@ public class MainActivity extends AppCompatActivity {
         arr_status = new ArrayList();
         arr_file_name = new ArrayList();
 
+        img_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                data.clear();
+                ScanOptions options = new ScanOptions();
+                options.setPrompt("Volume up");
+                options.setBarcodeImageEnabled(true);
+                options.setOrientationLocked(true);
+                options.setCaptureActivity(Capture.class);
+                barLauncer.launch(options);
+            }
+        });
 
         if(data.getAll().isEmpty()){
             ScanOptions options = new ScanOptions();
@@ -87,22 +101,7 @@ public class MainActivity extends AppCompatActivity {
             options.setOrientationLocked(true);
             options.setCaptureActivity(Capture.class);
             barLauncer.launch(options);
-
         }
-
-
-
-
-        btn_message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),Message.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                intent.putExtra("url",url);
-                startActivity(intent);
-                finish();
-            }
-        });
 
         btn_recieve.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == PICK_FILES_REQUEST_CODE && resultCode == RESULT_OK) {
             if (data != null) {
+                img_ill.setVisibility(View.INVISIBLE);
                 ClipData clipData = data.getClipData();
                 if (clipData != null) {
                     // Multiple files selected
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     private void displayFileInfo(Uri uri) throws FileNotFoundException {
 
 
-        getFileFromUri(getApplicationContext(),uri,data.getString("url"));
+        getFileFromUri(getApplicationContext(),uri,data.getString("url"),txt_check);
 
 
 
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static void getFileFromUri(Context context, Uri uri,String data) {
+    private void getFileFromUri(Context context, Uri uri, String data, TextView txt) {
         try {
             String result = "temp_file";
             try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
@@ -221,21 +221,36 @@ public class MainActivity extends AppCompatActivity {
                     .url(data+"/upload")
                     .post(requestBody)
                     .build();
+            array_name.add(tempFile.getName());
+            arr_status.add(tempFile.getName());
+            arr_size.add(tempFile.getName());
+
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            recyclerView.setAdapter(new list_adapter(getApplicationContext(),array_name,arr_size,arr_status,url));
+
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    Toast.makeText(context, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        // Upload is successful
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(context,"Uploaded", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Log.e("Upload", "Failed: " + response.code());
+                    }
                 }
 
                 @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    // Network failure
+                    Log.e("Upload", "Error: " + e.getMessage());
                 }
             });
 
-
-            Toast.makeText(context, requestBody.toString(), Toast.LENGTH_SHORT).show();
 
 
         } catch (Exception e) {
@@ -248,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
         if(result.getContents() != null) {
             url = result.getContents().toString();
             data.putString("url",url);
-
             //Toast.makeText(this, result.getContents().toString(), Toast.LENGTH_SHORT).show();
         }
 

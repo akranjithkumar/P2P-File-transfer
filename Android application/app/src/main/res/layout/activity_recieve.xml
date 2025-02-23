@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:fitsSystemWindows="true"
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,12 +13,14 @@
         android:id="@+id/recieve_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:scrollbars="none"
-        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_head" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
     <TextView
         android:id="@+id/txt_head"
         android:layout_width="wrap_content"
@@ -25,7 +28,7 @@
         android:text="P2P file transfer"
         android:textColor="@color/black"
         android:textSize="20dp"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +41,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/menu_background"
         android:padding="20dp"
-        android:weightSum="3"
+        android:weightSum="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -83,32 +86,13 @@
                 android:textColor="@color/black" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/recieve_message_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/message" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Message"
-                android:textColor="@color/black" />
-        </LinearLayout>
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/img_recieve_menu"
         android:layout_width="20dp"
         android:layout_height="25dp"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -119,11 +103,24 @@
         android:id="@+id/recieve_img_hotspot"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintEnd_toStartOf="@+id/img_recieve_menu"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/personal_hotspot" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="30dp"
+        android:text="Avalilable files"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_head" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

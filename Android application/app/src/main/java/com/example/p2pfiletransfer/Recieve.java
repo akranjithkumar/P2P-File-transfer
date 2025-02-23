@@ -34,7 +34,7 @@ public class Recieve extends AppCompatActivity {
     LinearLayout btn_recieve,btn_send;
     ArrayList array_name,arr_size,arr_status,arr_file_name;
     RecyclerView recyclerView;
-    ImageView img_hotspot;
+    ImageView img_hotspot,img_menu;
     Data data;
     String url;
 
@@ -47,9 +47,8 @@ public class Recieve extends AppCompatActivity {
         recyclerView = findViewById(R.id.recieve_recyclerview);
         img_hotspot = findViewById(R.id.recieve_img_hotspot);
 
-        btn_recieve = findViewById(R.id.recieve_message_btn);
         btn_send = findViewById(R.id.recieve_send_btn);
-
+        img_menu = findViewById(R.id.img_recieve_menu);
         array_name = new ArrayList();
         arr_size = new ArrayList();
         arr_status = new ArrayList();
@@ -57,9 +56,23 @@ public class Recieve extends AppCompatActivity {
 
         data = new Data(getApplicationContext());
 
+        img_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                data.clear();
+                ScanOptions options = new ScanOptions();
+                options.setPrompt("Volume up");
+                options.setBarcodeImageEnabled(true);
+                options.setOrientationLocked(true);
+                options.setCaptureActivity(Capture.class);
+                barLauncer.launch(options);
+            }
+        });
+
+
         //url = getIntent().getStringExtra("url");
 
-        if(data.getString("url").equals(null)){
+        if(data.getAll().isEmpty()){
             ScanOptions options = new ScanOptions();
             options.setPrompt("Volume up");
             options.setBarcodeImageEnabled(true);
@@ -67,6 +80,7 @@ public class Recieve extends AppCompatActivity {
             options.setCaptureActivity(Capture.class);
             barLauncer.launch(options);
         }
+
 
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, data.getString("url")+"/files", null,
@@ -81,7 +95,6 @@ public class Recieve extends AppCompatActivity {
                                 array_name.add(fileName);
                                 arr_size.add(String.valueOf(10/1000));
                                 arr_status.add("not");
-                                Toast.makeText(Recieve.this, "kjg", Toast.LENGTH_SHORT).show();
                                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                                 recyclerView.setAdapter(new list_adapter(getApplicationContext(),array_name,arr_size,arr_status,url));
 
@@ -99,7 +112,6 @@ public class Recieve extends AppCompatActivity {
                 }
         );
 
-        Toast.makeText(this, arr_file_name.toString(), Toast.LENGTH_SHORT).show();
 
         Volley.newRequestQueue(this).add(request);
 
@@ -126,15 +138,6 @@ public class Recieve extends AppCompatActivity {
             }
         });
 
-        btn_recieve.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),Message.class);
-                intent.putExtra("url",url);
-                startActivity(intent);
-                finish();
-            }
-        });
 
     }
 

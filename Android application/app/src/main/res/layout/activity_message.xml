@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/menu_background"
         android:padding="20dp"
-        android:weightSum="3"
+        android:weightSum="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -122,29 +122,10 @@
                 android:textColor="@color/black" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/recieve_message_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/message" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Message"
-                android:textColor="@color/black" />
-        </LinearLayout>
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/img_message_menu"
         android:layout_width="20dp"
         android:layout_height="25dp"
         android:layout_marginTop="20dp"
@@ -155,12 +136,12 @@
 
 
     <ImageView
+        android:layout_marginRight="20dp"
         android:id="@+id/img_hotspot"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintEnd_toStartOf="@+id/img_message_menu"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/personal_hotspot" />
 

@@ -66,14 +66,32 @@ public class list_adapter extends RecyclerView.Adapter<list_holder> {
                 String fileUrl = data.getString("url")+"/download/"+ fileName;
 
                 DownloadManager.Request request1 = new DownloadManager.Request(Uri.parse(fileUrl));
-                request1.setTitle("Downloading "+ fileName);
+
+// Set the title and description for the download notification
+                request1.setTitle("Downloading " + fileName);
                 request1.setDescription("Please wait...");
+
+// Ensure the notification is fully visible and shows when the download is complete
                 request1.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+// Set the destination for the downloaded file
                 request1.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
 
+// High-priority settings
+                request1.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE); // Allow both Wi-Fi and mobile data
+                request1.setRequiresCharging(false); // Allow download even if the device is not charging
+                request1.setAllowedOverMetered(true); // Allow download over metered networks
+                request1.setAllowedOverRoaming(true); // Allow download while roaming
 
-                DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                long downloadId = manager.enqueue(request1); // Store download ID
+// Set high-priority headers (optional, for servers that support priority headers)
+                request1.addRequestHeader("Priority", "high");
+
+
+
+// Enqueue the request
+                DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                long downloadId = downloadManager.enqueue(request1);
+
 
                 BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
                     @Override
@@ -81,8 +99,9 @@ public class list_adapter extends RecyclerView.Adapter<list_holder> {
                         long completedDownloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
                         if (completedDownloadId == downloadId) { // Check if it's the same file
-                            Toast.makeText(context, "Download Completed!", Toast.LENGTH_SHORT).show();
-                        }
+                            NotificationHelper helper = new NotificationHelper();
+                            helper.createNotificationChannel(context);
+                            helper.showNotification(context);                        }
                     }
                 };
 

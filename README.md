@@ -41,7 +41,7 @@ https://github.com/user-attachments/assets/f79e7968-c9f4-41c8-b2ac-738deddc8ebe
 ### 📱 Android (Native App)  
 1. **Install the APK** from **Android APK/P2P file transfer.apk**.  
 2. **Open** the app and **grant necessary permissions**.  
-3. **Scan the QR code** from a Windows/Linux/Android Host machine.  
+3. **Tap the 3 dot button to Scan the QR code** from a Windows/Linux/Android Host machine.  
 4. **Perform file transfer operations**.  
 
 ### 🐧 Linux & 🍏 MacOS (Web)  

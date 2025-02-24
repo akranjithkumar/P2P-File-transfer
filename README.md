@@ -37,6 +37,8 @@ P2P Transfer is a **cross-platform** peer-to-peer file transfer system that allo
 
 ## 📥 Installation :
 
+**Make sure your send and receive devices are connected to same WiFi network**. 
+(Future Update: The SSID password payload will be auto detected by QR)
 ### 🖥️ Windows (.exe) - Host Machine  
 1. **Download** the latest `.exe` from the **WINDOWS EXE** directory.  
 2. **Run** the executable.  
